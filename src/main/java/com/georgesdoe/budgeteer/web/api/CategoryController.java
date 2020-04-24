@@ -2,7 +2,8 @@ package com.georgesdoe.budgeteer.web.api;
 
 import com.georgesdoe.budgeteer.domain.Category;
 import com.georgesdoe.budgeteer.repository.CategoryRepository;
-import com.sun.istack.Nullable;
+import com.georgesdoe.budgeteer.web.request.CategoryRequest;
+import com.georgesdoe.budgeteer.web.response.SimpleMessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +21,11 @@ public class CategoryController {
     }
 
     @PostMapping("/categories")
-    public Category create(@RequestParam String name,
-                           @RequestParam(required = false) Long parentId) {
+    public Category create(@RequestBody CategoryRequest request) {
         Category category = new Category();
-        category.setName(name);
-        if (parentId != null) {
-            Category parent = categories.findById(parentId)
+        category.setName(request.getName());
+        if (request.getParentId() != null) {
+            Category parent = categories.findById(request.getParentId())
                     .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
             category.setParent(parent);
         }
@@ -35,11 +35,11 @@ public class CategoryController {
 
     @PutMapping("/categories/{id}")
     public Category update(@PathVariable Long id,
-                           @RequestParam String name,
-                           @RequestParam(required = false) Long parentId) {
+                           @RequestBody CategoryRequest request) {
         Category category = categories.findById(id)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
-        category.setName(name);
+        category.setName(request.getName());
+        Long parentId = request.getParentId();
         if (parentId != null) {
             Category parent = categories.findById(parentId)
                     .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
@@ -52,9 +52,10 @@ public class CategoryController {
     }
 
     @DeleteMapping("/categories/{id}")
-    public void delete(@PathVariable Long id) {
+    public SimpleMessageResponse delete(@PathVariable Long id) {
         Category category = categories.findById(id)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
         categories.delete(category);
+        return new SimpleMessageResponse("Category deleted");
     }
 }
