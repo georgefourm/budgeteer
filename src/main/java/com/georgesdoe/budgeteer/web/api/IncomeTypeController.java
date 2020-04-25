@@ -2,6 +2,8 @@ package com.georgesdoe.budgeteer.web.api;
 
 import com.georgesdoe.budgeteer.domain.IncomeType;
 import com.georgesdoe.budgeteer.repository.IncomeTypeRepository;
+import com.georgesdoe.budgeteer.web.request.IncomeTypeRequest;
+import com.georgesdoe.budgeteer.web.response.SimpleMessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +21,10 @@ public class IncomeTypeController {
     }
 
     @PostMapping("/income-types")
-    public IncomeType create(@RequestParam String name,
-                             @RequestParam(required = false) Long parentId) {
+    public IncomeType create(@RequestBody IncomeTypeRequest request) {
         IncomeType type = new IncomeType();
-        type.setName(name);
+        type.setName(request.getName());
+        Long parentId = request.getParentId();
         if (parentId != null) {
             IncomeType parent = incomeTypes.findById(parentId)
                     .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
@@ -33,27 +35,25 @@ public class IncomeTypeController {
     }
 
     @PutMapping("/income-types/{id}")
-    public IncomeType update(@PathVariable Long id,
-                             @RequestParam String name,
-                             @RequestParam(required = false) Long parentId) {
+    public IncomeType update(@PathVariable Long id,@RequestBody IncomeTypeRequest request) {
         IncomeType type = incomeTypes.findById(id)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
-        type.setName(name);
+        type.setName(request.getName());
+        Long parentId = request.getParentId();
         if (parentId != null) {
             IncomeType parent = incomeTypes.findById(parentId)
                     .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
             type.setParent(parent);
-        } else {
-            type.setParent(null);
         }
         incomeTypes.save(type);
         return type;
     }
 
     @DeleteMapping("/income-types/{id}")
-    public void delete(@PathVariable Long id) {
+    public SimpleMessageResponse delete(@PathVariable Long id) {
         IncomeType type = incomeTypes.findById(id)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
         incomeTypes.delete(type);
+        return new SimpleMessageResponse("Income type deleted");
     }
 }

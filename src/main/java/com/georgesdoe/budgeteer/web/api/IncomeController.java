@@ -4,14 +4,12 @@ import com.georgesdoe.budgeteer.domain.Income;
 import com.georgesdoe.budgeteer.domain.IncomeType;
 import com.georgesdoe.budgeteer.repository.IncomeRepository;
 import com.georgesdoe.budgeteer.repository.IncomeTypeRepository;
+import com.georgesdoe.budgeteer.web.request.IncomeRequest;
+import com.georgesdoe.budgeteer.web.response.SimpleMessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
-
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
 
 @RestController
 public class IncomeController {
@@ -28,15 +26,12 @@ public class IncomeController {
     }
 
     @PostMapping("/incomes")
-    public Income create(@RequestParam BigDecimal amount,
-                         @RequestParam(required = false) String notes,
-                         @RequestParam
-                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime receivedAt,
-                         @RequestParam(required = false) Long typeId) {
+    public Income create(@RequestBody IncomeRequest request) {
         Income income = new Income();
-        income.setAmount(amount);
-        income.setNotes(notes);
-        income.setReceivedAt(receivedAt);
+        income.setAmount(request.getAmount());
+        income.setNotes(request.getNotes());
+        income.setReceivedAt(request.getReceivedAt());
+        Long typeId = request.getTypeId();
         if (typeId != null){
             IncomeType type = incomeTypes.findById(typeId)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
@@ -47,33 +42,27 @@ public class IncomeController {
     }
 
     @PutMapping("/incomes/{id}")
-    public Income update(
-            @PathVariable Long id,
-            @RequestParam BigDecimal amount,
-            @RequestParam(required = false) String notes,
-            @RequestParam
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime receivedAt,
-            @RequestParam(required = false) Long typeId) {
+    public Income update(@PathVariable Long id,@RequestBody IncomeRequest request) {
         Income income = incomes.findById(id)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
-        income.setAmount(amount);
-        income.setNotes(notes);
-        income.setReceivedAt(receivedAt);
+        income.setAmount(request.getAmount());
+        income.setNotes(request.getNotes());
+        income.setReceivedAt(request.getReceivedAt());
+        Long typeId = request.getTypeId();
         if (typeId != null){
             IncomeType type = incomeTypes.findById(typeId)
                     .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
             income.setType(type);
-        }else{
-            income.setType(null);
         }
         incomes.save(income);
         return income;
     }
 
     @DeleteMapping("/incomes/{id}")
-    public void delete(@PathVariable Long id) {
+    public SimpleMessageResponse delete(@PathVariable Long id) {
         Income income = incomes.findById(id)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
         incomes.delete(income);
+        return new SimpleMessageResponse("Income deleted");
     }
 }
