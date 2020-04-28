@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 public interface ExpenseRepository extends CrudRepository<Expense,Long> {
 
@@ -13,4 +14,13 @@ public interface ExpenseRepository extends CrudRepository<Expense,Long> {
             "FROM Expense e " +
             "WHERE e.boughtAt >= :start AND e.boughtAt <= :end")
     BigDecimal getTotalExpenses(OffsetDateTime start, OffsetDateTime end);
+
+    @Query(nativeQuery = true)
+    List<CategoryBreakdown> getBreakdownByCategory();
+
+    interface CategoryBreakdown{
+        BigDecimal getTotalCost();
+
+        String getCategory();
+    }
 }

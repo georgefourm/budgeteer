@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm
+        http://java.sun.com/xml/ns/persistence/orm_2_0.xsd ">
+    <named-native-query name="Expense.getBreakdownByCategory">
+        <query>
+            SELECT SUM(expenses.cost) AS totalCost, parents.name AS category FROM
+            expenses
+            INNER JOIN items ON expenses.item_id = items.id
+            INNER JOIN categories ON items.category_id = categories.id
+            LEFT JOIN categories parents ON categories.parent_id = parents.id
+            WHERE categories.parent_id IS NOT NULL
+            GROUP BY parents.id
+
+            UNION
+
+            SELECT SUM(expenses.cost) AS totalCost, categories.name AS category FROM
+            expenses
+            INNER JOIN items ON expenses.item_id = items.id
+            INNER JOIN categories ON items.category_id = categories.id
+            WHERE categories.parent_id IS NULL
+            GROUP BY categories.id
+        </query>
+    </named-native-query>
+
+</entity-mappings>

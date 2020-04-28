@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.List;
+
 @RestController
 public class ExpenseController {
 
@@ -23,6 +25,11 @@ public class ExpenseController {
     @GetMapping("/expenses")
     public Iterable<Expense> index() {
         return expenses.findAll();
+    }
+
+    @GetMapping("/expenses/breakdown")
+    public List<ExpenseRepository.CategoryBreakdown> breakdown(){
+        return expenses.getBreakdownByCategory();
     }
 
     @PostMapping("/expenses")
