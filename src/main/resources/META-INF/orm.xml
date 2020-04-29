@@ -24,4 +24,12 @@
         </query>
     </named-native-query>
 
+    <named-native-query name="Income.getIncomeByMonth">
+        <query>
+            SELECT to_char(incomes.received_at,'YYYY-MM-DD') AS date, COALESCE(SUM(amount),0) AS amount
+            FROM incomes
+            GROUP BY date
+        </query>
+    </named-native-query>
+
 </entity-mappings>
