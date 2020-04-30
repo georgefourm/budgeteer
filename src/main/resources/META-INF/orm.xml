@@ -5,22 +5,22 @@
         http://java.sun.com/xml/ns/persistence/orm_2_0.xsd ">
     <named-native-query name="Expense.getBreakdownByCategory">
         <query>
-            SELECT SUM(expenses.cost) AS totalCost, parents.name AS category FROM
-            expenses
-            INNER JOIN items ON expenses.item_id = items.id
-            INNER JOIN categories ON items.category_id = categories.id
-            LEFT JOIN categories parents ON categories.parent_id = parents.id
-            WHERE categories.parent_id IS NOT NULL
-            GROUP BY parents.id
+            WITH RECURSIVE categories_with_roots AS (
+              SELECT id, parent_id, name, name as root_name, id AS root_id
+              FROM categories
+              WHERE parent_id IS NULL
 
-            UNION
+              UNION ALL
 
-            SELECT SUM(expenses.cost) AS totalCost, categories.name AS category FROM
-            expenses
-            INNER JOIN items ON expenses.item_id = items.id
-            INNER JOIN categories ON items.category_id = categories.id
-            WHERE categories.parent_id IS NULL
-            GROUP BY categories.id
+              SELECT cat.id, cat.parent_id, cat.name, roots.root_name, roots.root_id
+              FROM categories cat INNER JOIN categories_with_roots roots ON roots.id = cat.parent_id
+            )
+            SELECT SUM(expenses.cost) AS totalCost, cwr.root_name AS category
+            FROM
+                expenses
+                INNER JOIN items ON expenses.item_id = items.id
+                INNER JOIN categories_with_roots cwr ON items.category_id = cwr.id
+            GROUP BY cwr.root_name
         </query>
     </named-native-query>
 
