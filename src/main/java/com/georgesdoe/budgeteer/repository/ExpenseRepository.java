@@ -23,4 +23,13 @@ public interface ExpenseRepository extends CrudRepository<Expense,Long> {
 
         String getCategory();
     }
+
+    @Query(nativeQuery = true)
+    List<ExpenseRepository.MonthlyIncome> getExpensesByMonth(OffsetDateTime start, OffsetDateTime end);
+
+    interface MonthlyIncome{
+        String getDate();
+
+        BigDecimal getAmount();
+    }
 }

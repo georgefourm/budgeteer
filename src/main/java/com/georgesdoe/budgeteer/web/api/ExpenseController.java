@@ -7,10 +7,12 @@ import com.georgesdoe.budgeteer.repository.ItemRepository;
 import com.georgesdoe.budgeteer.web.request.ExpenseRequest;
 import com.georgesdoe.budgeteer.web.response.SimpleMessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @RestController
@@ -30,6 +32,16 @@ public class ExpenseController {
     @GetMapping("/expenses/breakdown")
     public List<ExpenseRepository.CategoryBreakdown> breakdown(){
         return expenses.getBreakdownByCategory();
+    }
+
+    @GetMapping("/expenses/monthly")
+    public List<ExpenseRepository.MonthlyIncome> monthly(@RequestParam
+                                                        @DateTimeFormat(iso= DateTimeFormat.ISO.DATE_TIME)
+                                                                OffsetDateTime startDate,
+                                                        @RequestParam
+                                                        @DateTimeFormat(iso= DateTimeFormat.ISO.DATE_TIME)
+                                                                OffsetDateTime endDate){
+        return expenses.getExpensesByMonth(startDate,endDate);
     }
 
     @PostMapping("/expenses")

@@ -26,9 +26,18 @@
 
     <named-native-query name="Income.getIncomeByMonth">
         <query>
-            SELECT to_char(incomes.received_at,'YYYY-MM-DD') AS date, COALESCE(SUM(amount),0) AS amount
+            SELECT to_char(date_trunc('month',incomes.received_at),'YYYY-MM-DD') AS date, COALESCE(SUM(amount),0) AS amount
             FROM incomes
             GROUP BY date
+            ORDER BY date ASC
+        </query>
+    </named-native-query>
+    <named-native-query name="Expense.getExpensesByMonth">
+        <query>
+            SELECT to_char(date_trunc('month',expenses.bought_at),'YYYY-MM-DD') AS date, COALESCE(SUM(cost),0) AS amount
+            FROM expenses
+            GROUP BY date
+            ORDER BY date ASC
         </query>
     </named-native-query>
 
