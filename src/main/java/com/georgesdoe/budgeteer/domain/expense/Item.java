@@ -1,4 +1,4 @@
-package com.georgesdoe.budgeteer.domain;
+package com.georgesdoe.budgeteer.domain.expense;
 
 import lombok.Data;
 

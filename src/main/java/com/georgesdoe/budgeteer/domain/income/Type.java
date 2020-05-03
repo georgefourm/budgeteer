@@ -1,4 +1,4 @@
-package com.georgesdoe.budgeteer.domain;
+package com.georgesdoe.budgeteer.domain.income;
 
 import lombok.Data;
 
@@ -6,8 +6,8 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "categories")
-public class Category {
+@Table(name = "income_types")
+public class Type {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -16,5 +16,5 @@ public class Category {
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    Category parent;
+    Type parent;
 }

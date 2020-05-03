@@ -28,7 +28,7 @@ public class DashboardController {
                                            @DateTimeFormat(iso= DateTimeFormat.ISO.DATE_TIME)
                                            OffsetDateTime endDate){
         DashboardStatsResponse response = new DashboardStatsResponse();
-        response.setTotalExpenses(expenses.getTotalExpenses(startDate,endDate));
+        response.setTotalExpenses(expenses.getTotalExpenses(startDate.toLocalDate(),endDate.toLocalDate()));
         response.setTotalIncome(incomes.getTotalIncome(startDate,endDate));
         return response;
     }

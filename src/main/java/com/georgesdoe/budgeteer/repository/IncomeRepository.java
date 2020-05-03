@@ -1,6 +1,6 @@
 package com.georgesdoe.budgeteer.repository;
 
-import com.georgesdoe.budgeteer.domain.Income;
+import com.georgesdoe.budgeteer.domain.income.Income;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 

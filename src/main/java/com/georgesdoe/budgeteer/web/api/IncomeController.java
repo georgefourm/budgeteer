@@ -1,7 +1,7 @@
 package com.georgesdoe.budgeteer.web.api;
 
-import com.georgesdoe.budgeteer.domain.Income;
-import com.georgesdoe.budgeteer.domain.IncomeType;
+import com.georgesdoe.budgeteer.domain.income.Income;
+import com.georgesdoe.budgeteer.domain.income.Type;
 import com.georgesdoe.budgeteer.repository.IncomeRepository;
 import com.georgesdoe.budgeteer.repository.IncomeTypeRepository;
 import com.georgesdoe.budgeteer.web.request.IncomeRequest;
@@ -47,7 +47,7 @@ public class IncomeController {
         income.setReceivedAt(request.getReceivedAt());
         Long typeId = request.getTypeId();
         if (typeId != null){
-            IncomeType type = incomeTypes.findById(typeId)
+            Type type = incomeTypes.findById(typeId)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
             income.setType(type);
         }
@@ -64,7 +64,7 @@ public class IncomeController {
         income.setReceivedAt(request.getReceivedAt());
         Long typeId = request.getTypeId();
         if (typeId != null){
-            IncomeType type = incomeTypes.findById(typeId)
+            Type type = incomeTypes.findById(typeId)
                     .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
             income.setType(type);
         }

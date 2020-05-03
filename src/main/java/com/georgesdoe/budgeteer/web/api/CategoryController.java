@@ -1,6 +1,6 @@
 package com.georgesdoe.budgeteer.web.api;
 
-import com.georgesdoe.budgeteer.domain.Category;
+import com.georgesdoe.budgeteer.domain.expense.Category;
 import com.georgesdoe.budgeteer.repository.CategoryRepository;
 import com.georgesdoe.budgeteer.web.request.CategoryRequest;
 import com.georgesdoe.budgeteer.web.response.SimpleMessageResponse;

@@ -1,8 +1,7 @@
-package com.georgesdoe.budgeteer.domain;
+package com.georgesdoe.budgeteer.domain.income;
 
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -24,7 +23,7 @@ public class Income {
 
     @ManyToOne
     @JoinColumn(name = "type_id")
-    IncomeType type;
+    Type type;
 
     @CreationTimestamp
     OffsetDateTime createdAt;

@@ -34,8 +34,9 @@
     </named-native-query>
     <named-native-query name="Expense.getExpensesByMonth">
         <query>
-            SELECT to_char(date_trunc('month',expenses.bought_at),'YYYY-MM-DD') AS date, COALESCE(SUM(cost),0) AS amount
+            SELECT to_char(date_trunc('month',lists.list_date),'YYYY-MM-DD') AS date, COALESCE(SUM(cost),0) AS amount
             FROM expenses
+            INNER JOIN expense_lists lists ON lists.id = expenses.list_id
             GROUP BY date
             ORDER BY date ASC
         </query>

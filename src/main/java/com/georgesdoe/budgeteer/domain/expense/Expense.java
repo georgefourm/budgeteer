@@ -1,4 +1,4 @@
-package com.georgesdoe.budgeteer.domain;
+package com.georgesdoe.budgeteer.domain.expense;
 
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -22,8 +22,6 @@ public class Expense {
     BigDecimal cost;
 
     Integer amount;
-
-    OffsetDateTime boughtAt;
 
     @CreationTimestamp
     OffsetDateTime createdAt;
