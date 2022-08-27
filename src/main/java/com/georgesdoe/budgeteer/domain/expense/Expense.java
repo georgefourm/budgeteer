@@ -21,6 +21,8 @@ public class Expense {
 
     BigDecimal cost;
 
+    String description;
+
     Integer amount;
 
     @CreationTimestamp

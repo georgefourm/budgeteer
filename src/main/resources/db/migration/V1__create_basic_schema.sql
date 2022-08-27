@@ -15,6 +15,7 @@ CREATE TABLE expenses(
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     item_id INTEGER REFERENCES items (id) ON DELETE RESTRICT,
     cost NUMERIC(12,2) NOT NULL,
+    description TEXT,
     amount INTEGER,
     bought_at TIMESTAMPTZ NOT NULL,
     created_at TIMESTAMPTZ NOT NULL
