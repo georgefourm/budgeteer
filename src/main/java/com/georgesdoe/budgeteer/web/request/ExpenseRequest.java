@@ -11,6 +11,8 @@ public class ExpenseRequest {
     Long itemId;
 
     Long categoryId;
+    
+    Long groupId;
 
     @NotNull(message = "Cost must be provided")
     BigDecimal cost;

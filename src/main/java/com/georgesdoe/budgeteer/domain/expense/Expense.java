@@ -1,5 +1,6 @@
 package com.georgesdoe.budgeteer.domain.expense;
 
+import com.georgesdoe.budgeteer.domain.member.Group;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -22,6 +23,10 @@ public class Expense {
     @ManyToOne
     @JoinColumn(name = "category_id")
     Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    Group group;
 
     BigDecimal cost;
 

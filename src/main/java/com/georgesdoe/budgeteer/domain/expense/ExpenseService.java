@@ -1,8 +1,10 @@
 package com.georgesdoe.budgeteer.domain.expense;
 
 import com.georgesdoe.budgeteer.domain.common.ResourceNotFoundException;
+import com.georgesdoe.budgeteer.domain.member.Group;
 import com.georgesdoe.budgeteer.repository.CategoryRepository;
 import com.georgesdoe.budgeteer.repository.ExpenseRepository;
+import com.georgesdoe.budgeteer.repository.GroupRepository;
 import com.georgesdoe.budgeteer.repository.ItemRepository;
 import com.georgesdoe.budgeteer.web.request.ExpenseRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class ExpenseService {
 
     @Autowired
     CategoryRepository categories;
+
+    @Autowired
+    GroupRepository groups;
 
     public Expense createExpense(ExpenseRequest request) throws ResourceNotFoundException {
         var expense = new Expense();
@@ -45,6 +50,11 @@ public class ExpenseService {
             var category = categories.findById(request.getCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException(Category.class));
             expense.setCategory(category);
+        }
+        if (request.getGroupId() != null) {
+            var group = groups.findById(request.getGroupId())
+                    .orElseThrow(() -> new ResourceNotFoundException(Group.class));
+            expense.setGroup(group);
         }
     }
 
