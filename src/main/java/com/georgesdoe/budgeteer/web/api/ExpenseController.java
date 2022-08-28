@@ -29,6 +29,6 @@ public class ExpenseController {
     @DeleteMapping("/expenses/{id}")
     public SimpleMessageResponse delete(@PathVariable Long id) throws ResourceNotFoundException {
         expenses.deleteExpense(id);
-        return new SimpleMessageResponse("Expense list deleted");
+        return new SimpleMessageResponse("Expense deleted");
     }
 }
