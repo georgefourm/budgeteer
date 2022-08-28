@@ -5,7 +5,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Data
 @Entity
@@ -19,12 +19,18 @@ public class Expense {
     @JoinColumn(name = "item_id")
     Item item;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    Category category;
+
     BigDecimal cost;
 
     String description;
 
     Integer amount;
 
+    Instant boughtAt;
+
     @CreationTimestamp
-    OffsetDateTime createdAt;
+    Instant createdAt;
 }

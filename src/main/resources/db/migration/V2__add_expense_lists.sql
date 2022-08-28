@@ -5,6 +5,4 @@ CREATE TABLE expense_lists(
 );
 
 ALTER TABLE expenses
-    DROP COLUMN bought_at;
-ALTER TABLE expenses
-    ADD COLUMN list_id INTEGER REFERENCES expense_lists (id) ON DELETE CASCADE;
+    ADD COLUMN list_id INTEGER REFERENCES expense_lists (id);
