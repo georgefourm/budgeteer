@@ -153,6 +153,10 @@ public class XlsFileParser implements FileParser {
     }
 
     protected String getTransactionCategory(Row row) {
+        if (map.categoryIndex == null) {
+            return null;
+        }
+
         var cell = row.getCell(map.categoryIndex);
 
         if (cell == null || cell.getCellType() != CellType.STRING) {
@@ -164,6 +168,10 @@ public class XlsFileParser implements FileParser {
     }
 
     protected String getTransactionDescription(Row row) {
+        if (map.descriptionIndex == null) {
+            return null;
+        }
+
         var cell = row.getCell(map.descriptionIndex);
 
         if (cell == null || cell.getCellType() != CellType.STRING) {

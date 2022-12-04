@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Data
 public class IncomeRequest {
@@ -13,7 +13,7 @@ public class IncomeRequest {
     Long typeId;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    OffsetDateTime receivedAt;
+    Instant receivedAt;
 
     String notes;
 }

@@ -5,7 +5,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Data
 @Entity
@@ -19,12 +19,12 @@ public class Income {
 
     String notes;
 
-    OffsetDateTime receivedAt;
+    Instant receivedAt;
 
     @ManyToOne
     @JoinColumn(name = "type_id")
     Type type;
 
     @CreationTimestamp
-    OffsetDateTime createdAt;
+    Instant createdAt;
 }
