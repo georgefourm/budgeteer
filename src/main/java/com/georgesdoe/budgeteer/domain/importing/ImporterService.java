@@ -24,6 +24,9 @@ public class ImporterService {
     @Autowired
     IncomeRepository incomeRepo;
 
+    @Autowired
+    CategoryRuleService ruleService;
+
     public void importFile(MultipartFile file, FileParserConfiguration configuration) {
         var parser = factory.getFromFile(file);
         var transactions = parser.parseFile(file, configuration);
@@ -33,20 +36,46 @@ public class ImporterService {
 
         for (var transaction : transactions) {
             if (transaction.getValue().compareTo(BigDecimal.ZERO) >= 0) {
-                var income = new Income();
-                income.setAmount(transaction.getValue());
-                income.setReceivedAt(transaction.getTimestamp());
-                income.setDescription(transaction.getDescription());
-                incomes.add(income);
+                incomes.add(parseIncome(transaction));
             } else {
-                var expense = new Expense();
-                expense.setAmount(transaction.getValue().abs());
-                expense.setBoughtAt(transaction.getTimestamp());
-                expense.setDescription(transaction.getDescription());
-                expenses.add(expense);
+                expenses.add(parseExpense(transaction));
             }
         }
         expenseRepo.saveAll(expenses);
         incomeRepo.saveAll(incomes);
+    }
+
+    protected Income parseIncome(ImportedTransaction transaction) {
+        var income = new Income();
+        income.setAmount(transaction.getValue());
+        income.setReceivedAt(transaction.getTimestamp());
+        income.setDescription(transaction.getDescription());
+
+        var rule = ruleService.findApplicableRule(transaction);
+        if (rule != null) {
+            income.setCategory(rule.getCategory());
+            if (rule.getDescriptionReplacement() != null) {
+                income.setDescription(rule.getDescriptionReplacement());
+            }
+        }
+
+        return income;
+    }
+
+    protected Expense parseExpense(ImportedTransaction transaction) {
+        var expense = new Expense();
+        expense.setAmount(transaction.getValue().abs());
+        expense.setBoughtAt(transaction.getTimestamp());
+        expense.setDescription(transaction.getDescription());
+
+        var rule = ruleService.findApplicableRule(transaction);
+        if (rule != null) {
+            expense.setCategory(rule.getCategory());
+            if (rule.getDescriptionReplacement() != null) {
+                expense.setDescription(rule.getDescriptionReplacement());
+            }
+        }
+
+        return expense;
     }
 }
