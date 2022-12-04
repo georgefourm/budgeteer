@@ -37,8 +37,8 @@ public class ExpenseService {
 
     protected void populateExpense(Expense expense, ExpenseRequest request) throws ResourceNotFoundException {
         expense.setBoughtAt(request.getBoughtAt());
+        expense.setItemCount(request.getItemCount());
         expense.setAmount(request.getAmount());
-        expense.setCost(request.getCost());
         expense.setDescription(request.getDescription());
 
         if (request.getItemId() != null) {

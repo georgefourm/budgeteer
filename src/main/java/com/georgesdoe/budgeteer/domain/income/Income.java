@@ -1,5 +1,6 @@
 package com.georgesdoe.budgeteer.domain.income;
 
+import com.georgesdoe.budgeteer.domain.expense.Category;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -17,13 +18,13 @@ public class Income {
 
     BigDecimal amount;
 
-    String notes;
+    String description;
 
     Instant receivedAt;
 
     @ManyToOne
-    @JoinColumn(name = "type_id")
-    Type type;
+    @JoinColumn(name = "category_id")
+    Category category;
 
     @CreationTimestamp
     Instant createdAt;

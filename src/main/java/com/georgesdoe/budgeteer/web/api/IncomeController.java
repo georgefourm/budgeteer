@@ -1,9 +1,10 @@
 package com.georgesdoe.budgeteer.web.api;
 
+import com.georgesdoe.budgeteer.domain.common.ResourceNotFoundException;
+import com.georgesdoe.budgeteer.domain.expense.Category;
 import com.georgesdoe.budgeteer.domain.income.Income;
-import com.georgesdoe.budgeteer.domain.income.Type;
+import com.georgesdoe.budgeteer.repository.CategoryRepository;
 import com.georgesdoe.budgeteer.repository.IncomeRepository;
-import com.georgesdoe.budgeteer.repository.IncomeTypeRepository;
 import com.georgesdoe.budgeteer.web.request.IncomeRequest;
 import com.georgesdoe.budgeteer.web.response.SimpleMessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class IncomeController {
     IncomeRepository incomes;
 
     @Autowired
-    IncomeTypeRepository incomeTypes;
+    CategoryRepository categories;
 
     @GetMapping("/incomes")
     public Iterable<Income> index() {
@@ -31,42 +32,42 @@ public class IncomeController {
 
     @GetMapping("/incomes/monthly")
     public List<IncomeRepository.MonthlyIncome> monthly(@RequestParam
-                                                        @DateTimeFormat(iso= DateTimeFormat.ISO.DATE_TIME)
+                                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                         OffsetDateTime startDate,
                                                         @RequestParam
-                                                        @DateTimeFormat(iso= DateTimeFormat.ISO.DATE_TIME)
-                                                        OffsetDateTime endDate){
-        return incomes.getIncomeByMonth(startDate,endDate);
+                                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                        OffsetDateTime endDate) {
+        return incomes.getIncomeByMonth(startDate, endDate);
     }
 
     @PostMapping("/incomes")
-    public Income create(@RequestBody IncomeRequest request) {
+    public Income create(@RequestBody IncomeRequest request) throws ResourceNotFoundException {
         Income income = new Income();
         income.setAmount(request.getAmount());
-        income.setNotes(request.getNotes());
+        income.setDescription(request.getDescription());
         income.setReceivedAt(request.getReceivedAt());
-        Long typeId = request.getTypeId();
-        if (typeId != null){
-            Type type = incomeTypes.findById(typeId)
-                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
-            income.setType(type);
+        Long categoryId = request.getCategoryId();
+        if (categoryId != null) {
+            var category = categories.findById(request.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(Category.class));
+            income.setCategory(category);
         }
         incomes.save(income);
         return income;
     }
 
     @PutMapping("/incomes/{id}")
-    public Income update(@PathVariable Long id,@RequestBody IncomeRequest request) {
+    public Income update(@PathVariable Long id, @RequestBody IncomeRequest request) throws ResourceNotFoundException {
         Income income = incomes.findById(id)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
         income.setAmount(request.getAmount());
-        income.setNotes(request.getNotes());
+        income.setDescription(request.getDescription());
         income.setReceivedAt(request.getReceivedAt());
-        Long typeId = request.getTypeId();
-        if (typeId != null){
-            Type type = incomeTypes.findById(typeId)
-                    .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
-            income.setType(type);
+        Long categoryId = request.getCategoryId();
+        if (categoryId != null) {
+            var category = categories.findById(request.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(Category.class));
+            income.setCategory(category);
         }
         incomes.save(income);
         return income;

@@ -27,7 +27,7 @@ public class ExpenseList {
     public void updateTotal() {
         BigDecimal total = expenses
                 .stream()
-                .map(Expense::getCost)
+                .map(Expense::getAmount)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
         setTotal(total);

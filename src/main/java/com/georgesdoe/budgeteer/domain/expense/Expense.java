@@ -28,11 +28,11 @@ public class Expense {
     @JoinColumn(name = "group_id")
     Group group;
 
-    BigDecimal cost;
+    BigDecimal amount;
 
     String description;
 
-    Integer amount;
+    Integer itemCount;
 
     Instant boughtAt;
 

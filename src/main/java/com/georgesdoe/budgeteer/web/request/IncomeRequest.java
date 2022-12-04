@@ -10,10 +10,10 @@ import java.time.Instant;
 public class IncomeRequest {
     BigDecimal amount;
 
-    Long typeId;
+    Long categoryId;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     Instant receivedAt;
 
-    String notes;
+    String description;
 }

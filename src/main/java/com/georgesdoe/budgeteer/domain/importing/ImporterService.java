@@ -36,13 +36,13 @@ public class ImporterService {
                 var income = new Income();
                 income.setAmount(transaction.getValue());
                 income.setReceivedAt(transaction.getTimestamp());
-                income.setNotes(transaction.getDescription());
+                income.setDescription(transaction.getDescription());
                 incomes.add(income);
             } else {
                 var expense = new Expense();
-                expense.setCost(transaction.getValue().abs());
-                expense.setDescription(transaction.getDescription());
+                expense.setAmount(transaction.getValue().abs());
                 expense.setBoughtAt(transaction.getTimestamp());
+                expense.setDescription(transaction.getDescription());
                 expenses.add(expense);
             }
         }

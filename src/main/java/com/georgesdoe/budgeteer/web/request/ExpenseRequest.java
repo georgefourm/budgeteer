@@ -11,15 +11,15 @@ public class ExpenseRequest {
     Long itemId;
 
     Long categoryId;
-    
+
     Long groupId;
 
     @NotNull(message = "Cost must be provided")
-    BigDecimal cost;
+    BigDecimal amount;
 
     String description;
 
-    Integer amount = 1;
+    Integer itemCount = 1;
 
     @NotNull(message = "The date of the expense must be provided")
     Instant boughtAt;
