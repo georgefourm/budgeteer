@@ -1,7 +1,6 @@
 package com.georgesdoe.budgeteer.domain.importing;
 
 import com.georgesdoe.budgeteer.domain.expense.Expense;
-import com.georgesdoe.budgeteer.domain.importing.parsing.FileParserConfiguration;
 import com.georgesdoe.budgeteer.domain.importing.parsing.FileParserFactory;
 import com.georgesdoe.budgeteer.domain.income.Income;
 import com.georgesdoe.budgeteer.repository.ExpenseRepository;
@@ -27,18 +26,22 @@ public class ImporterService {
     @Autowired
     CategoryRuleService ruleService;
 
-    public void importFile(MultipartFile file, FileParserConfiguration configuration) {
+    public void importFile(MultipartFile file, ImportConfiguration configuration) {
         var parser = factory.getFromFile(file);
-        var transactions = parser.parseFile(file, configuration);
+        var transactions = parser.parseFile(file, configuration.fileConfiguration);
 
         var incomes = new ArrayList<Income>();
         var expenses = new ArrayList<Expense>();
 
         for (var transaction : transactions) {
             if (transaction.getValue().compareTo(BigDecimal.ZERO) >= 0) {
-                incomes.add(parseIncome(transaction));
+                var income = parseIncome(transaction);
+                income.setMemberId(configuration.memberId);
+                incomes.add(income);
             } else {
-                expenses.add(parseExpense(transaction));
+                var expense = parseExpense(transaction);
+                expense.setMemberId(configuration.memberId);
+                expenses.add(expense);
             }
         }
         expenseRepo.saveAll(expenses);

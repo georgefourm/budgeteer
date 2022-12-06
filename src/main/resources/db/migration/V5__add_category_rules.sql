@@ -4,5 +4,5 @@ CREATE TABLE category_rules(
     category_rule VARCHAR,
     description_replacement VARCHAR,
     importance INTEGER DEFAULT 1,
-    category_id INTEGER REFERENCES categories(id),
+    category_id INTEGER REFERENCES categories(id)
 );

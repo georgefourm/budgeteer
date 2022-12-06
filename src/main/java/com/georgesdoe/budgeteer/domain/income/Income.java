@@ -22,6 +22,8 @@ public class Income {
 
     Instant receivedAt;
 
+    Integer memberId;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     Category category;

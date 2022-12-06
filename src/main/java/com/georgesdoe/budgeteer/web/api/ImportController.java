@@ -1,7 +1,7 @@
 package com.georgesdoe.budgeteer.web.api;
 
+import com.georgesdoe.budgeteer.domain.importing.ImportConfiguration;
 import com.georgesdoe.budgeteer.domain.importing.ImporterService;
-import com.georgesdoe.budgeteer.domain.importing.parsing.FileParserConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -16,7 +16,7 @@ public class ImportController {
 
     @PostMapping(value = "/import", consumes = "multipart/form-data")
     public void importFile(
-            @RequestPart("configuration") FileParserConfiguration configuration,
+            @RequestPart("configuration") ImportConfiguration configuration,
             @RequestPart("file") MultipartFile file
     ) {
         service.importFile(file, configuration);
