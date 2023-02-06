@@ -23,10 +23,7 @@ public class ImporterService {
     @Autowired
     IncomeRepository incomeRepo;
 
-    @Autowired
-    CategoryRuleService ruleService;
-
-    public void importFile(MultipartFile file, ImportConfiguration configuration) {
+    public int importFile(MultipartFile file, ImportConfiguration configuration) {
         var parser = factory.getFromFile(file);
         var transactions = parser.parseFile(file, configuration.fileConfiguration);
 
@@ -34,6 +31,13 @@ public class ImporterService {
         var expenses = new ArrayList<Expense>();
 
         for (var transaction : transactions) {
+            var isBeforeStart = configuration.getStartFrom() != null &&
+                    transaction.getTimestamp().isBefore(configuration.getStartFrom());
+            var isAfterEnd = configuration.getEndAt() != null &&
+                    transaction.getTimestamp().isAfter(configuration.getEndAt());
+            if (isBeforeStart || isAfterEnd) {
+                continue;
+            }
             if (transaction.getValue().compareTo(BigDecimal.ZERO) >= 0) {
                 var income = parseIncome(transaction);
                 income.setMemberId(configuration.memberId);
@@ -46,6 +50,7 @@ public class ImporterService {
         }
         expenseRepo.saveAll(expenses);
         incomeRepo.saveAll(incomes);
+        return transactions.size();
     }
 
     protected Income parseIncome(ImportedTransaction transaction) {
@@ -53,14 +58,6 @@ public class ImporterService {
         income.setAmount(transaction.getValue());
         income.setReceivedAt(transaction.getTimestamp());
         income.setDescription(transaction.getDescription());
-
-        var rule = ruleService.findApplicableRule(transaction);
-        if (rule != null) {
-            income.setCategory(rule.getCategory());
-            if (rule.getDescriptionReplacement() != null) {
-                income.setDescription(rule.getDescriptionReplacement());
-            }
-        }
 
         return income;
     }
@@ -70,14 +67,6 @@ public class ImporterService {
         expense.setAmount(transaction.getValue().abs());
         expense.setBoughtAt(transaction.getTimestamp());
         expense.setDescription(transaction.getDescription());
-
-        var rule = ruleService.findApplicableRule(transaction);
-        if (rule != null) {
-            expense.setCategory(rule.getCategory());
-            if (rule.getDescriptionReplacement() != null) {
-                expense.setDescription(rule.getDescriptionReplacement());
-            }
-        }
 
         return expense;
     }

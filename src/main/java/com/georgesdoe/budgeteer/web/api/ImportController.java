@@ -3,10 +3,13 @@ package com.georgesdoe.budgeteer.web.api;
 import com.georgesdoe.budgeteer.domain.importing.ImportConfiguration;
 import com.georgesdoe.budgeteer.domain.importing.ImporterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 @RestController
 public class ImportController {
@@ -15,10 +18,11 @@ public class ImportController {
     ImporterService service;
 
     @PostMapping(value = "/import", consumes = "multipart/form-data")
-    public void importFile(
+    public ResponseEntity<Map<String, Integer>> importFile(
             @RequestPart("configuration") ImportConfiguration configuration,
             @RequestPart("file") MultipartFile file
     ) {
-        service.importFile(file, configuration);
+        int transactions = service.importFile(file, configuration);
+        return ResponseEntity.ok(Map.of("transactions", transactions));
     }
 }

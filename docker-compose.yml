@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   db:
-    image: postgres
+    image: postgres:14-alpine
     restart: always
     environment:
       POSTGRES_USER: admin
@@ -14,7 +14,6 @@ services:
       db_net:
     ports:
       - "5432:5432"
-
   pgadmin:
     image: dpage/pgadmin4:latest
     restart: always
@@ -25,9 +24,34 @@ services:
       - "8081:80"
     networks:
       db_net:
+  metabase:
+    image: metabase/metabase:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      db_net:
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: meta_db
+      MB_DB_PORT: 5432
+      MB_DB_USER: admin
+      MB_DB_PASS: password
+      MB_DB_HOST: db
+  ui:
+    image: nocodb/nocodb:latest
+    restart: always
+    ports:
+      - "3001:8080"
+    networks:
+      db_net:
+    volumes:
+      - app_data:/usr/app/data/
+
 
 volumes:
   db:
+  app_data:
 
 networks:
   db_net:
