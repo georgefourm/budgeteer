@@ -3,10 +3,13 @@ package com.georgesdoe.budgeteer.domain.importing.parsing;
 import com.georgesdoe.budgeteer.domain.importing.FileImportException;
 import com.georgesdoe.budgeteer.domain.importing.ImportedTransaction;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +32,11 @@ public class XlsFileParser implements FileParser {
 
     FileParserConfiguration config;
 
+    Logger logger = LoggerFactory.getLogger(getClass());
+
+    static final String XLS_MIME_TYPE = "application/vnd.ms-excel";
+    static final String XLSX_MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
     static class RowMap {
         Integer timestampIndex, descriptionIndex, categoryIndex, valueIndex;
 
@@ -46,7 +54,12 @@ public class XlsFileParser implements FileParser {
     public List<ImportedTransaction> parseFile(MultipartFile file, FileParserConfiguration configuration) {
         config = configuration;
         try (InputStream inp = file.getInputStream()) {
-            HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));
+            Workbook wb;
+            if (file.getContentType() != null && file.getContentType().equals(XLS_MIME_TYPE)) {
+                wb = new HSSFWorkbook(inp);
+            } else {
+                wb = new XSSFWorkbook(inp);
+            }
             if (wb.getNumberOfSheets() == 0) {
                 throw new FileImportException("No sheets present in file");
             }
@@ -98,6 +111,10 @@ public class XlsFileParser implements FileParser {
         var transactions = new ArrayList<ImportedTransaction>();
         while (rows.hasNext()) {
             var row = rows.next();
+            if (isRowEmpty(row)) {
+                logger.warn("Row " + row.getRowNum() + " empty, skipping");
+                continue;
+            }
             var transaction = parseRow(row);
             transactions.add(transaction);
         }
@@ -113,6 +130,11 @@ public class XlsFileParser implements FileParser {
         transaction.setDescription(getTransactionDescription(row));
 
         return transaction;
+    }
+
+    protected boolean isRowEmpty(Row row) {
+        return row.getCell(map.valueIndex).toString().isEmpty() &&
+                row.getCell(map.timestampIndex).toString().isEmpty();
     }
 
     protected BigDecimal getTransactionValue(Row row) {
@@ -131,6 +153,15 @@ public class XlsFileParser implements FileParser {
             throw new FileImportException(
                     "Invalid timestamp at row " + row.getRowNum() + " and column " + map.valueIndex
             );
+        }
+
+        if (config.timestampFormat.isEmpty()) {
+            try {
+                var date = cell.getLocalDateTimeCellValue();
+                return date.toInstant(ZoneOffset.UTC);
+            } catch (IllegalStateException | NumberFormatException e) {
+                logger.warn("Failed to parse date value, attempting manual parsing", e);
+            }
         }
 
         var ts = "";

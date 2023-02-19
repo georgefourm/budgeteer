@@ -1,6 +1,5 @@
 package com.georgesdoe.budgeteer.domain.expense;
 
-import com.georgesdoe.budgeteer.domain.member.Group;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -16,25 +15,15 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "item_id")
-    Item item;
+    Long groupId;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    Category category;
+    Long memberId;
 
-    @ManyToOne
-    @JoinColumn(name = "group_id")
-    Group group;
-
-    Integer memberId;
+    Long categoryId;
 
     BigDecimal amount;
 
     String description;
-
-    Integer itemCount;
 
     Instant boughtAt;
 

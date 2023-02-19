@@ -1,7 +1,7 @@
 package com.georgesdoe.budgeteer.repository;
 
-import com.georgesdoe.budgeteer.domain.expense.Category;
+import com.georgesdoe.budgeteer.domain.common.Category;
 import org.springframework.data.repository.CrudRepository;
 
-public interface CategoryRepository extends CrudRepository<Category,Long> {
+public interface CategoryRepository extends CrudRepository<Category, Long> {
 }

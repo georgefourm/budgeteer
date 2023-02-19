@@ -18,11 +18,11 @@ public class ImportController {
     ImporterService service;
 
     @PostMapping(value = "/import", consumes = "multipart/form-data")
-    public ResponseEntity<Map<String, Integer>> importFile(
+    public ResponseEntity<Map<String, ImporterService.ImportResult>> importFile(
             @RequestPart("configuration") ImportConfiguration configuration,
             @RequestPart("file") MultipartFile file
     ) {
-        int transactions = service.importFile(file, configuration);
+        var transactions = service.importFile(file, configuration);
         return ResponseEntity.ok(Map.of("transactions", transactions));
     }
 }

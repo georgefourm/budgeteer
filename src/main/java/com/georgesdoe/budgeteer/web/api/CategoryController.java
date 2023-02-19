@@ -1,6 +1,6 @@
 package com.georgesdoe.budgeteer.web.api;
 
-import com.georgesdoe.budgeteer.domain.expense.Category;
+import com.georgesdoe.budgeteer.domain.common.Category;
 import com.georgesdoe.budgeteer.repository.CategoryRepository;
 import com.georgesdoe.budgeteer.web.request.CategoryRequest;
 import com.georgesdoe.budgeteer.web.response.SimpleMessageResponse;
@@ -44,7 +44,7 @@ public class CategoryController {
             Category parent = categories.findById(parentId)
                     .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
             category.setParent(parent);
-        }else{
+        } else {
             category.setParent(null);
         }
         categories.save(category);

@@ -11,7 +11,7 @@ public class ImportedTransaction {
 
     Instant timestamp;
 
-    String category;
+    String category = "";
 
     String description;
 }

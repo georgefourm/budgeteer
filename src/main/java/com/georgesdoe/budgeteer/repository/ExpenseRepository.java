@@ -2,14 +2,14 @@ package com.georgesdoe.budgeteer.repository;
 
 import com.georgesdoe.budgeteer.domain.expense.Expense;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-public interface ExpenseRepository extends CrudRepository<Expense,Long> {
+public interface ExpenseRepository extends PagingAndSortingRepository<Expense, Long> {
 
     @Query("SELECT COALESCE(SUM(e.total),0) " +
             "FROM ExpenseList e " +
@@ -19,7 +19,7 @@ public interface ExpenseRepository extends CrudRepository<Expense,Long> {
     @Query(nativeQuery = true)
     List<CategoryBreakdown> getBreakdownByCategory();
 
-    interface CategoryBreakdown{
+    interface CategoryBreakdown {
         BigDecimal getTotalCost();
 
         String getCategory();
@@ -28,7 +28,7 @@ public interface ExpenseRepository extends CrudRepository<Expense,Long> {
     @Query(nativeQuery = true)
     List<ExpenseRepository.MonthlyIncome> getExpensesByMonth(OffsetDateTime start, OffsetDateTime end);
 
-    interface MonthlyIncome{
+    interface MonthlyIncome {
         String getDate();
 
         BigDecimal getAmount();

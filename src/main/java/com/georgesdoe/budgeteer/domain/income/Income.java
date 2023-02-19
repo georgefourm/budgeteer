@@ -1,6 +1,5 @@
 package com.georgesdoe.budgeteer.domain.income;
 
-import com.georgesdoe.budgeteer.domain.expense.Category;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -22,11 +21,9 @@ public class Income {
 
     Instant receivedAt;
 
-    Integer memberId;
+    Long memberId;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    Category category;
+    Long categoryId;
 
     @CreationTimestamp
     Instant createdAt;

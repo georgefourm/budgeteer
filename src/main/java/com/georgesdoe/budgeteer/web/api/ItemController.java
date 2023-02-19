@@ -1,6 +1,6 @@
 package com.georgesdoe.budgeteer.web.api;
 
-import com.georgesdoe.budgeteer.domain.expense.Category;
+import com.georgesdoe.budgeteer.domain.common.Category;
 import com.georgesdoe.budgeteer.domain.expense.Item;
 import com.georgesdoe.budgeteer.repository.CategoryRepository;
 import com.georgesdoe.budgeteer.repository.ItemRepository;
@@ -41,7 +41,7 @@ public class ItemController {
     }
 
     @PutMapping("/items/{id}")
-    public Item update(@PathVariable Long id,@RequestBody ItemRequest request) {
+    public Item update(@PathVariable Long id, @RequestBody ItemRequest request) {
         Item item = items.findById(id)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
         item.setName(request.getName());

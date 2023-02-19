@@ -1,7 +1,7 @@
 package com.georgesdoe.budgeteer.web.api;
 
+import com.georgesdoe.budgeteer.domain.common.Category;
 import com.georgesdoe.budgeteer.domain.common.ResourceNotFoundException;
-import com.georgesdoe.budgeteer.domain.expense.Category;
 import com.georgesdoe.budgeteer.domain.income.Income;
 import com.georgesdoe.budgeteer.repository.CategoryRepository;
 import com.georgesdoe.budgeteer.repository.IncomeRepository;
@@ -50,7 +50,7 @@ public class IncomeController {
         if (categoryId != null) {
             var category = categories.findById(request.getCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException(Category.class));
-            income.setCategory(category);
+            income.setCategoryId(category.getId());
         }
         incomes.save(income);
         return income;
@@ -67,7 +67,7 @@ public class IncomeController {
         if (categoryId != null) {
             var category = categories.findById(request.getCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException(Category.class));
-            income.setCategory(category);
+            income.setCategoryId(category.getId());
         }
         incomes.save(income);
         return income;

@@ -3,14 +3,15 @@ package com.georgesdoe.budgeteer.domain.importing;
 import com.georgesdoe.budgeteer.domain.expense.Expense;
 import com.georgesdoe.budgeteer.domain.importing.parsing.FileParserFactory;
 import com.georgesdoe.budgeteer.domain.income.Income;
-import com.georgesdoe.budgeteer.repository.ExpenseRepository;
-import com.georgesdoe.budgeteer.repository.IncomeRepository;
+import com.georgesdoe.budgeteer.domain.rules.CategoryRuleService;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ImporterService {
@@ -18,12 +19,16 @@ public class ImporterService {
     FileParserFactory factory = new FileParserFactory();
 
     @Autowired
-    ExpenseRepository expenseRepo;
+    CategoryRuleService rules;
 
-    @Autowired
-    IncomeRepository incomeRepo;
+    public static class ImportResult {
+        @Getter
+        List<Income> incomes;
+        @Getter
+        List<Expense> expenses;
+    }
 
-    public int importFile(MultipartFile file, ImportConfiguration configuration) {
+    public ImportResult importFile(MultipartFile file, ImportConfiguration configuration) {
         var parser = factory.getFromFile(file);
         var transactions = parser.parseFile(file, configuration.fileConfiguration);
 
@@ -31,26 +36,22 @@ public class ImporterService {
         var expenses = new ArrayList<Expense>();
 
         for (var transaction : transactions) {
-            var isBeforeStart = configuration.getStartFrom() != null &&
-                    transaction.getTimestamp().isBefore(configuration.getStartFrom());
-            var isAfterEnd = configuration.getEndAt() != null &&
-                    transaction.getTimestamp().isAfter(configuration.getEndAt());
-            if (isBeforeStart || isAfterEnd) {
-                continue;
-            }
-            if (transaction.getValue().compareTo(BigDecimal.ZERO) >= 0) {
+            if (transaction.getValue().compareTo(BigDecimal.ZERO) >= 0
+                    && configuration.fileConfiguration.getExpensesAsNegative()) {
                 var income = parseIncome(transaction);
                 income.setMemberId(configuration.memberId);
                 incomes.add(income);
             } else {
                 var expense = parseExpense(transaction);
                 expense.setMemberId(configuration.memberId);
+                expense.setGroupId(configuration.groupId);
                 expenses.add(expense);
             }
         }
-        expenseRepo.saveAll(expenses);
-        incomeRepo.saveAll(incomes);
-        return transactions.size();
+        var result = new ImportResult();
+        result.expenses = expenses;
+        result.incomes = incomes;
+        return result;
     }
 
     protected Income parseIncome(ImportedTransaction transaction) {
@@ -67,6 +68,15 @@ public class ImporterService {
         expense.setAmount(transaction.getValue().abs());
         expense.setBoughtAt(transaction.getTimestamp());
         expense.setDescription(transaction.getDescription());
+
+        var category = rules.getCategoryByName(transaction.getCategory());
+
+        if (category.isEmpty()) {
+            category = rules.getCategoryByDescription(transaction.getDescription());
+            category.ifPresent(value -> expense.setCategoryId(value.getId()));
+        } else {
+            expense.setCategoryId(category.get().getId());
+        }
 
         return expense;
     }

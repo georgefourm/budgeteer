@@ -1,6 +1,6 @@
-package com.georgesdoe.budgeteer.domain.importing;
+package com.georgesdoe.budgeteer.domain.rules;
 
-import com.georgesdoe.budgeteer.domain.expense.Category;
+import com.georgesdoe.budgeteer.domain.common.Category;
 import lombok.Data;
 
 import javax.persistence.*;

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 public class ExpenseController {
@@ -16,9 +17,20 @@ public class ExpenseController {
     @Autowired
     ExpenseService expenses;
 
+    @GetMapping("/expenses")
+    public Iterable<Expense> all() {
+        return expenses.listExpenses();
+    }
+
     @PostMapping("/expenses")
     public Expense create(@Valid @RequestBody ExpenseRequest request) throws ResourceNotFoundException {
         return expenses.createExpense(request);
+    }
+
+    @PostMapping("/expenses/bulk")
+    public SimpleMessageResponse createBulk(@Valid @RequestBody List<ExpenseRequest> request) throws ResourceNotFoundException {
+        expenses.createExpenses(request);
+        return new SimpleMessageResponse("Expenses saved");
     }
 
     @PutMapping("/expenses/{id}")
