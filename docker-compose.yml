@@ -38,15 +38,13 @@ services:
       MB_DB_USER: admin
       MB_DB_PASS: password
       MB_DB_HOST: db
-  ui:
-    image: nocodb/nocodb:latest
-    restart: always
-    ports:
-      - "3001:8080"
+  api:
+    build: .
     networks:
       db_net:
-    volumes:
-      - app_data:/usr/app/data/
+    restart: always
+    ports:
+      - "8080:8080"
 
 
 volumes:
