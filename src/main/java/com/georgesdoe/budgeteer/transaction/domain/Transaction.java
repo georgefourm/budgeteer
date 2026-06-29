@@ -1,4 +1,4 @@
-package com.georgesdoe.budgeteer.income.domain;
+package com.georgesdoe.budgeteer.transaction.domain;
 
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,19 +9,24 @@ import java.time.Instant;
 
 @Data
 @Entity
-@Table(name = "incomes")
-public class Income {
+@Table(name = "transactions")
+public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    /**
+     * Signed amount: positive values are incomes, negative values are expenses.
+     */
     BigDecimal amount;
 
     String description;
 
-    Instant receivedAt;
+    Instant transactionTs;
 
     Long memberId;
+
+    Long groupId;
 
     Long categoryId;
 

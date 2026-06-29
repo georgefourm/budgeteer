@@ -13,6 +13,4 @@ public class FileParserConfiguration {
     String categoryField;
 
     String timestampFormat;
-
-    Boolean expensesAsNegative = false;
 }

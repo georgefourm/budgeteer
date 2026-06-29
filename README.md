@@ -1,9 +1,10 @@
 # Budgeteer
-A budgeting app backend, used to record income and expenses and produce useful statistics and reports.
+A budgeting app backend, used to record income and expenses.
 
 ## Modeling
 The following concepts were used to model the data of the application:
 
-- Income : An income denotes a incoming amount of money. It optionally can have a type, such as salary or bonus.
-- Item : An item that can be bought, optionally belonging to a hierarchy of categories.
-- Expense : An actual purchase of an item, at a specific price. These can be organized into Expense Lists
+- Transaction : A single movement of money. The sign of its amount captures the
+  direction — a positive amount is an income, a negative amount is an expense.
+  A transaction optionally belongs to a category, a member and a group.
+- Category : A label, optionally arranged in a hierarchy, used to classify transactions.
