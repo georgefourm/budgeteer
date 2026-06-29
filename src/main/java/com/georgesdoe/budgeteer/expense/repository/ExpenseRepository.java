@@ -1,0 +1,37 @@
+package com.georgesdoe.budgeteer.expense.repository;
+
+import com.georgesdoe.budgeteer.expense.domain.Expense;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+
+public interface ExpenseRepository extends CrudRepository<Expense, Long>, PagingAndSortingRepository<Expense, Long> {
+
+    @Query("SELECT COALESCE(SUM(e.total),0) " +
+            "FROM ExpenseList e " +
+            "WHERE e.listDate >= :start AND e.listDate <= :end")
+    BigDecimal getTotalExpenses(LocalDate start, LocalDate end);
+
+    @Query(nativeQuery = true)
+    List<CategoryBreakdown> getBreakdownByCategory();
+
+    interface CategoryBreakdown {
+        BigDecimal getTotalCost();
+
+        String getCategory();
+    }
+
+    @Query(nativeQuery = true)
+    List<ExpenseRepository.MonthlyIncome> getExpensesByMonth(OffsetDateTime start, OffsetDateTime end);
+
+    interface MonthlyIncome {
+        String getDate();
+
+        BigDecimal getAmount();
+    }
+}

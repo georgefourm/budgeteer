@@ -1,0 +1,19 @@
+package com.georgesdoe.budgeteer.income.web;
+
+import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+
+@Data
+public class IncomeRequest {
+    BigDecimal amount;
+
+    Long categoryId;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    Instant receivedAt;
+
+    String description;
+}
