@@ -1,16 +1,14 @@
-version: '3.1'
-
 services:
   db:
-    image: postgres:14-alpine
+    image: postgres:18.4-alpine
     restart: always
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
       POSTGRES_DB: budgeteer
     volumes:
-      - db:/var/lib/postgresql/data
-      - ./scripts/initdb/:/docker-entrypoint-initdb.d
+      - db:/var/lib/postgresql
+      - ./scripts/docker/initdb/:/docker-entrypoint-initdb.d
     networks:
       db_net:
     ports:
@@ -39,21 +37,6 @@ services:
       MB_DB_USER: admin
       MB_DB_PASS: password
       MB_DB_HOST: db
-  api:
-    image: georgesdoe/budgeteer-api:main
-    environment:
-      DATASOURCE_URL: jdbc:postgresql://db:5432/budgeteer
-      DATASOURCE_USERNAME: admin
-      DATASOURCE_PASSWORD: password
-    networks:
-      db_net:
-    restart: always
-    ports:
-      - "8080:8080"
-  ui:
-    image: georgesdoe/budgeteer-ui:main
-    ports:
-      - "80:80"
 
 
 volumes:

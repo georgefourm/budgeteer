@@ -2,7 +2,7 @@ package com.georgesdoe.budgeteer.domain.common;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Data
 @Entity

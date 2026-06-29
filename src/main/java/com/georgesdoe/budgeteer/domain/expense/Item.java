@@ -3,7 +3,7 @@ package com.georgesdoe.budgeteer.domain.expense;
 import com.georgesdoe.budgeteer.domain.common.Category;
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Data

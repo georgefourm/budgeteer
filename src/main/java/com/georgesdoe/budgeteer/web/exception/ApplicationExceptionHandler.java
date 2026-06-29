@@ -4,8 +4,9 @@ import com.georgesdoe.budgeteer.domain.common.ResourceNotFoundException;
 import com.georgesdoe.budgeteer.web.response.SimpleMessageResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -28,7 +29,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
             @NonNull HttpHeaders headers,
-            @NonNull HttpStatus status,
+            @NonNull HttpStatusCode status,
             @NonNull WebRequest request
     ) {
         Map<String, String> body = new HashMap<>();
@@ -37,6 +38,6 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
             String errorMessage = error.getDefaultMessage();
             body.put(fieldName, errorMessage);
         });
-        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY, request);
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.UNPROCESSABLE_CONTENT, request);
     }
 }
