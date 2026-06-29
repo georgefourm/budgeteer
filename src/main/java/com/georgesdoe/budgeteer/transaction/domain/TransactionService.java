@@ -73,8 +73,6 @@ public class TransactionService {
         transaction.setTransactionTs(request.getTransactionTs());
         transaction.setAmount(request.getAmount());
         transaction.setDescription(request.getDescription());
-        transaction.setMemberId(request.getMemberId());
-        transaction.setGroupId(request.getGroupId());
 
         if (request.getCategoryId() != null) {
             categories.findById(request.getCategoryId())

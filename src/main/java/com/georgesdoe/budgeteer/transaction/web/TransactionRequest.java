@@ -10,10 +10,6 @@ import java.time.Instant;
 public class TransactionRequest {
     Long categoryId;
 
-    Long groupId;
-
-    Long memberId;
-
     @NotNull(message = "Amount must be provided (positive for income, negative for expense)")
     BigDecimal amount;
 

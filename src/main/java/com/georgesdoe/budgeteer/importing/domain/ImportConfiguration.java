@@ -6,9 +6,4 @@ import lombok.Data;
 @Data
 public class ImportConfiguration {
     FileParserConfiguration fileConfiguration;
-
-    Long memberId;
-    
-    Long groupId;
-
 }

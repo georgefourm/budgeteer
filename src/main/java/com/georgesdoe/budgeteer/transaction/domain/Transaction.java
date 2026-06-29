@@ -24,10 +24,6 @@ public class Transaction {
 
     Instant transactionTs;
 
-    Long memberId;
-
-    Long groupId;
-
     Long categoryId;
 
     @CreationTimestamp
