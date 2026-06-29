@@ -1,5 +1,7 @@
 package com.georgesdoe.budgeteer.transaction.domain;
 
+import com.georgesdoe.budgeteer.account.domain.Account;
+import com.georgesdoe.budgeteer.account.repository.AccountRepository;
 import com.georgesdoe.budgeteer.category.domain.Category;
 import com.georgesdoe.budgeteer.category.repository.CategoryRepository;
 import com.georgesdoe.budgeteer.common.domain.ResourceNotFoundException;
@@ -23,6 +25,9 @@ public class TransactionService {
 
     @Autowired
     CategoryRepository categories;
+
+    @Autowired
+    AccountRepository accounts;
 
     public List<Transaction> listTransactions(Direction direction) {
         if (direction == Direction.INCOME) {
@@ -73,6 +78,10 @@ public class TransactionService {
         transaction.setTransactionTs(request.getTransactionTs());
         transaction.setAmount(request.getAmount());
         transaction.setDescription(request.getDescription());
+
+        accounts.findById(request.getAccountId())
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class));
+        transaction.setAccountId(request.getAccountId());
 
         if (request.getCategoryId() != null) {
             categories.findById(request.getCategoryId())

@@ -10,6 +10,9 @@ import java.time.Instant;
 public class TransactionRequest {
     Long categoryId;
 
+    @NotNull(message = "The account the transaction belongs to must be provided")
+    Long accountId;
+
     @NotNull(message = "Amount must be provided (positive for income, negative for expense)")
     BigDecimal amount;
 

@@ -44,6 +44,7 @@ public class ImporterService {
         transaction.setAmount(entry.getValue());
         transaction.setTransactionTs(entry.getTimestamp());
         transaction.setDescription(entry.getDescription());
+        transaction.setAccountId(configuration.accountId);
 
         var category = rules.getCategoryByName(entry.getCategory());
         if (category.isEmpty()) {

@@ -24,6 +24,8 @@ public class Transaction {
 
     Instant transactionTs;
 
+    Long accountId;
+
     Long categoryId;
 
     @CreationTimestamp

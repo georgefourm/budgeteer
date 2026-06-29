@@ -59,3 +59,29 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+tasks.register('flywayCreateMigration') {
+    group = 'flyway'
+    description = 'Creates a new placeholder Flyway migration. Usage: ./gradlew flywayCreateMigration -Pdesc="add something"'
+
+    doLast {
+        def migrationsDir = file('src/main/resources/db/migration')
+        migrationsDir.mkdirs()
+
+        def description = (project.findProperty('desc') ?: 'new_migration').toString()
+                .trim()
+                .toLowerCase()
+                .replaceAll(/[^a-z0-9]+/, '_')
+                .replaceAll(/(^_+)|(_+$)/, '')
+        if (!description) {
+            description = 'new_migration'
+        }
+
+        def now = new Date()
+        def version = now.format('yyyyMMddHHmmss')
+        def migrationFile = new File(migrationsDir, "V${version}__${description}.sql")
+
+        migrationFile.text = "-- ${description}\n-- Created: ${now.format('yyyy-MM-dd HH:mm:ss')}\n\n"
+        println "Created migration: ${migrationFile.path}"
+    }
+}
