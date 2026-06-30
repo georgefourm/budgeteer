@@ -14,11 +14,7 @@ public class CategoryRuleEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    String descriptionRule;
-
-    String categoryRule;
-
-    String descriptionReplacement;
+    String ruleRegex;
 
     Integer importance;
 

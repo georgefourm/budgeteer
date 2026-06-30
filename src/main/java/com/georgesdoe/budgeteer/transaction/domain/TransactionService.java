@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -74,6 +75,19 @@ public class TransactionService {
         entity.setCategoryId(changes.getCategoryId());
         transactions.save(entity);
         return mapper.toDomain(entity);
+    }
+
+    /**
+     * Assigns the given category to all transactions whose description matches the regex.
+     * A null or blank regex is a no-op (a blank pattern would otherwise match every transaction).
+     * Returns the number of transactions updated.
+     */
+    @Transactional
+    public int assignCategoryByDescription(Long categoryId, String regex) {
+        if (regex == null || regex.isBlank()) {
+            return 0;
+        }
+        return transactions.assignCategoryByDescriptionMatch(categoryId, regex);
     }
 
     public void deleteTransaction(Long transactionId) throws ResourceNotFoundException {

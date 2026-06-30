@@ -7,11 +7,7 @@ import lombok.Data;
 public class CategoryRule {
     Long id;
 
-    String descriptionRule;
-
-    String categoryRule;
-
-    String descriptionReplacement;
+    String ruleRegex;
 
     Integer importance;
 

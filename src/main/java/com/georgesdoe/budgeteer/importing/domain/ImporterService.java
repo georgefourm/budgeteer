@@ -1,7 +1,7 @@
 package com.georgesdoe.budgeteer.importing.domain;
 
+import com.georgesdoe.budgeteer.category.domain.CategoryResolver;
 import com.georgesdoe.budgeteer.importing.domain.parsing.FileParserFactory;
-import com.georgesdoe.budgeteer.rules.domain.CategoryRuleService;
 import com.georgesdoe.budgeteer.transaction.domain.Transaction;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class ImporterService {
     FileParserFactory factory = new FileParserFactory();
 
     @Autowired
-    CategoryRuleService rules;
+    CategoryResolver categoryResolver;
 
     public static class ImportResult {
         @Getter
@@ -46,9 +46,9 @@ public class ImporterService {
         transaction.setDescription(entry.getDescription());
         transaction.setAccountId(configuration.accountId);
 
-        var category = rules.getCategoryByName(entry.getCategory());
+        var category = categoryResolver.resolveByName(entry.getCategory());
         if (category.isEmpty()) {
-            category = rules.getCategoryByDescription(entry.getDescription());
+            category = categoryResolver.resolveByDescription(entry.getDescription());
         }
         category.ifPresent(v -> transaction.setCategoryId(v.getId()));
 
