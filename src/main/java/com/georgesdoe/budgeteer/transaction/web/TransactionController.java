@@ -3,13 +3,15 @@ package com.georgesdoe.budgeteer.transaction.web;
 import com.georgesdoe.budgeteer.common.domain.ResourceNotFoundException;
 import com.georgesdoe.budgeteer.common.web.SimpleMessageResponse;
 import com.georgesdoe.budgeteer.transaction.domain.TransactionService;
-import com.georgesdoe.budgeteer.transaction.domain.TransactionService.Direction;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedModel;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -25,14 +27,13 @@ public class TransactionController {
     @Autowired
     TransactionDtoMapper mapper;
 
-    @Operation(summary = "List transactions, optionally filtered by direction",
-            description = "Returns transactions sorted by transaction date descending. "
-                    + "When 'direction' is omitted, both incomes and expenses are returned.")
+    @Operation(
+            summary = "List transactions (paginated)",
+            description = "Returns a page of transactions, by default sorted by transaction date descending. "
+    )
     @GetMapping("/transactions")
-    public List<TransactionResponseDto> all(
-            @Parameter(description = "Restrict results to incomes or expenses. Omit for all transactions.")
-            @RequestParam(required = false) Direction direction) {
-        return transactions.listTransactions(direction).stream().map(mapper::toResponse).toList();
+    public PagedModel<TransactionResponseDto> all(@ParameterObject @PageableDefault(size = 20) Pageable pageable) {
+        return new PagedModel<>(transactions.listTransactions(pageable).map(mapper::toResponse));
     }
 
     @Operation(summary = "Create a new transaction")

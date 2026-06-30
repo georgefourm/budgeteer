@@ -9,17 +9,21 @@ import com.georgesdoe.budgeteer.transaction.repository.TransactionEntity;
 import com.georgesdoe.budgeteer.transaction.repository.TransactionEntityMapper;
 import com.georgesdoe.budgeteer.transaction.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
 @Service
 public class TransactionService {
 
-    private static final Sort BY_TRANSACTION_TS_DESC = Sort.by(Sort.Direction.DESC, "transactionTs");
+    private static final Sort DEFAULT_SORTING = Sort.by(Sort.Direction.DESC, "transactionTs");
+
+    private static final int MAX_PAGE_SIZE = 100;
 
     @Autowired
     TransactionRepository transactions;
@@ -33,17 +37,13 @@ public class TransactionService {
     @Autowired
     TransactionEntityMapper mapper;
 
-    public List<Transaction> listTransactions(Direction direction) {
-        List<TransactionEntity> entities;
-        if (direction == Direction.INCOME) {
-            entities = transactions.findByAmountGreaterThan(BigDecimal.ZERO, BY_TRANSACTION_TS_DESC);
-        } else if (direction == Direction.EXPENSE) {
-            entities = transactions.findByAmountLessThan(BigDecimal.ZERO, BY_TRANSACTION_TS_DESC);
-        } else {
-            entities = new LinkedList<>();
-            transactions.findAll(BY_TRANSACTION_TS_DESC).forEach(entities::add);
-        }
-        return entities.stream().map(mapper::toDomain).toList();
+    public Page<Transaction> listTransactions(Pageable pageable) {
+        var sorted = PageRequest.of(
+                pageable.getPageNumber(),
+                Math.min(pageable.getPageSize(), MAX_PAGE_SIZE),
+                pageable.getSortOr(DEFAULT_SORTING)
+        );
+        return transactions.findAll(sorted).map(mapper::toDomain);
     }
 
     public Transaction createTransaction(Transaction transaction) throws ResourceNotFoundException {
@@ -89,9 +89,5 @@ public class TransactionService {
         if (transaction.getCategoryId() != null && !categories.existsById(transaction.getCategoryId())) {
             throw new ResourceNotFoundException(Category.class);
         }
-    }
-
-    public enum Direction {
-        INCOME, EXPENSE
     }
 }
