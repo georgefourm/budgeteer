@@ -1,49 +1,43 @@
 package com.georgesdoe.budgeteer.account.web;
 
-import com.georgesdoe.budgeteer.account.domain.Account;
-import com.georgesdoe.budgeteer.account.repository.AccountRepository;
+import com.georgesdoe.budgeteer.account.domain.AccountService;
+import com.georgesdoe.budgeteer.common.domain.ResourceNotFoundException;
 import com.georgesdoe.budgeteer.common.web.SimpleMessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
 import jakarta.validation.Valid;
+import java.util.List;
 
 @RestController
 public class AccountController {
 
     @Autowired
-    AccountRepository accounts;
+    AccountService accounts;
+
+    @Autowired
+    AccountDtoMapper mapper;
 
     @GetMapping("/accounts")
-    public Iterable<Account> index() {
-        return accounts.findAll();
+    public List<AccountResponseDto> index() {
+        return accounts.listAccounts().stream().map(mapper::toResponse).toList();
     }
 
     @PostMapping("/accounts")
-    public Account create(@Valid @RequestBody AccountRequest request) {
-        Account account = new Account();
-        account.setName(request.getName());
-        accounts.save(account);
-        return account;
+    public AccountResponseDto create(@Valid @RequestBody AccountRequestDto request) {
+        return mapper.toResponse(accounts.createAccount(mapper.toDomain(request)));
     }
 
     @PutMapping("/accounts/{id}")
-    public Account update(@PathVariable Long id,
-                          @Valid @RequestBody AccountRequest request) {
-        Account account = accounts.findById(id)
-                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
-        account.setName(request.getName());
-        accounts.save(account);
-        return account;
+    public AccountResponseDto update(@PathVariable Long id,
+                                     @Valid @RequestBody AccountRequestDto request)
+            throws ResourceNotFoundException {
+        return mapper.toResponse(accounts.updateAccount(id, mapper.toDomain(request)));
     }
 
     @DeleteMapping("/accounts/{id}")
-    public SimpleMessageResponse delete(@PathVariable Long id) {
-        Account account = accounts.findById(id)
-                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
-        accounts.delete(account);
+    public SimpleMessageResponse delete(@PathVariable Long id) throws ResourceNotFoundException {
+        accounts.deleteAccount(id);
         return new SimpleMessageResponse("Account deleted");
     }
 }

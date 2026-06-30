@@ -1,12 +1,18 @@
-package com.georgesdoe.budgeteer.transaction.domain;
+package com.georgesdoe.budgeteer.transaction.repository;
 
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
 @Data
-public class Transaction {
+@Entity
+@Table(name = "transactions")
+public class TransactionEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     /**
@@ -22,5 +28,6 @@ public class Transaction {
 
     Long categoryId;
 
+    @CreationTimestamp
     Instant createdAt;
 }

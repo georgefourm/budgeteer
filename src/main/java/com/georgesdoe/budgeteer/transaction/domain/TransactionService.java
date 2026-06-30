@@ -5,8 +5,9 @@ import com.georgesdoe.budgeteer.account.repository.AccountRepository;
 import com.georgesdoe.budgeteer.category.domain.Category;
 import com.georgesdoe.budgeteer.category.repository.CategoryRepository;
 import com.georgesdoe.budgeteer.common.domain.ResourceNotFoundException;
+import com.georgesdoe.budgeteer.transaction.repository.TransactionEntity;
+import com.georgesdoe.budgeteer.transaction.repository.TransactionEntityMapper;
 import com.georgesdoe.budgeteer.transaction.repository.TransactionRepository;
-import com.georgesdoe.budgeteer.transaction.web.TransactionRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -29,64 +30,64 @@ public class TransactionService {
     @Autowired
     AccountRepository accounts;
 
+    @Autowired
+    TransactionEntityMapper mapper;
+
     public List<Transaction> listTransactions(Direction direction) {
+        List<TransactionEntity> entities;
         if (direction == Direction.INCOME) {
-            return transactions.findByAmountGreaterThan(BigDecimal.ZERO, BY_TRANSACTION_TS_DESC);
+            entities = transactions.findByAmountGreaterThan(BigDecimal.ZERO, BY_TRANSACTION_TS_DESC);
+        } else if (direction == Direction.EXPENSE) {
+            entities = transactions.findByAmountLessThan(BigDecimal.ZERO, BY_TRANSACTION_TS_DESC);
+        } else {
+            entities = new LinkedList<>();
+            transactions.findAll(BY_TRANSACTION_TS_DESC).forEach(entities::add);
         }
-        if (direction == Direction.EXPENSE) {
-            return transactions.findByAmountLessThan(BigDecimal.ZERO, BY_TRANSACTION_TS_DESC);
-        }
-        var result = new LinkedList<Transaction>();
-        transactions.findAll(BY_TRANSACTION_TS_DESC).forEach(result::add);
-        return result;
+        return entities.stream().map(mapper::toDomain).toList();
     }
 
-    public Transaction createTransaction(TransactionRequest request) throws ResourceNotFoundException {
-        var transaction = new Transaction();
-        populateTransaction(transaction, request);
-        transactions.save(transaction);
-        return transaction;
+    public Transaction createTransaction(Transaction transaction) throws ResourceNotFoundException {
+        validateReferences(transaction);
+        var entity = mapper.toEntity(transaction);
+        transactions.save(entity);
+        return mapper.toDomain(entity);
     }
 
-    public void createTransactions(List<TransactionRequest> request) throws ResourceNotFoundException {
-        var batch = new LinkedList<Transaction>();
-        for (TransactionRequest transactionRequest : request) {
-            var transaction = new Transaction();
-            populateTransaction(transaction, transactionRequest);
-            batch.add(transaction);
+    public void createTransactions(List<Transaction> request) throws ResourceNotFoundException {
+        var batch = new LinkedList<TransactionEntity>();
+        for (Transaction transaction : request) {
+            validateReferences(transaction);
+            batch.add(mapper.toEntity(transaction));
         }
         transactions.saveAll(batch);
     }
 
-    public Transaction updateTransaction(Long transactionId, TransactionRequest request)
+    public Transaction updateTransaction(Long transactionId, Transaction changes)
             throws ResourceNotFoundException {
-        var transaction = transactions.findById(transactionId)
+        var entity = transactions.findById(transactionId)
                 .orElseThrow(() -> new ResourceNotFoundException(Transaction.class));
-        populateTransaction(transaction, request);
-        transactions.save(transaction);
-        return transaction;
+        validateReferences(changes);
+        entity.setAmount(changes.getAmount());
+        entity.setDescription(changes.getDescription());
+        entity.setTransactionTs(changes.getTransactionTs());
+        entity.setAccountId(changes.getAccountId());
+        entity.setCategoryId(changes.getCategoryId());
+        transactions.save(entity);
+        return mapper.toDomain(entity);
     }
 
     public void deleteTransaction(Long transactionId) throws ResourceNotFoundException {
-        var transaction = transactions.findById(transactionId)
+        var entity = transactions.findById(transactionId)
                 .orElseThrow(() -> new ResourceNotFoundException(Transaction.class));
-        transactions.delete(transaction);
+        transactions.delete(entity);
     }
 
-    protected void populateTransaction(Transaction transaction, TransactionRequest request)
-            throws ResourceNotFoundException {
-        transaction.setTransactionTs(request.getTransactionTs());
-        transaction.setAmount(request.getAmount());
-        transaction.setDescription(request.getDescription());
-
-        accounts.findById(request.getAccountId())
-                .orElseThrow(() -> new ResourceNotFoundException(Account.class));
-        transaction.setAccountId(request.getAccountId());
-
-        if (request.getCategoryId() != null) {
-            categories.findById(request.getCategoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException(Category.class));
-            transaction.setCategoryId(request.getCategoryId());
+    protected void validateReferences(Transaction transaction) throws ResourceNotFoundException {
+        if (!accounts.existsById(transaction.getAccountId())) {
+            throw new ResourceNotFoundException(Account.class);
+        }
+        if (transaction.getCategoryId() != null && !categories.existsById(transaction.getCategoryId())) {
+            throw new ResourceNotFoundException(Category.class);
         }
     }
 

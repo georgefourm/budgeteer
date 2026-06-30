@@ -5,7 +5,7 @@ import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 
 @Data
-public class AccountRequest {
+public class AccountRequestDto {
     @NotBlank(message = "The account name must be provided")
     String name;
 }

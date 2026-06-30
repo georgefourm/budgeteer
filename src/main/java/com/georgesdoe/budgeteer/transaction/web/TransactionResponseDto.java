@@ -1,4 +1,4 @@
-package com.georgesdoe.budgeteer.transaction.domain;
+package com.georgesdoe.budgeteer.transaction.web;
 
 import lombok.Data;
 
@@ -6,12 +6,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Data
-public class Transaction {
+public class TransactionResponseDto {
     Long id;
 
-    /**
-     * Signed amount: positive values are incomes, negative values are expenses.
-     */
     BigDecimal amount;
 
     String description;

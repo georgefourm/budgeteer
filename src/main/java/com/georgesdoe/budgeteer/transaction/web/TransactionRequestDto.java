@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Data
-public class TransactionRequest {
+public class TransactionRequestDto {
     Long categoryId;
 
     @NotNull(message = "The account the transaction belongs to must be provided")

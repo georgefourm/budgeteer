@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:18.4-alpine
-    restart: always
+    restart: on-failure
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
@@ -13,19 +13,9 @@ services:
       db_net:
     ports:
       - "5432:5432"
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@db.com
-      PGADMIN_DEFAULT_PASSWORD: password
-    ports:
-      - "8081:80"
-    networks:
-      db_net:
   metabase:
     image: metabase/metabase:latest
-    restart: always
+    restart: on-failure
     ports:
       - "3000:3000"
     networks:
