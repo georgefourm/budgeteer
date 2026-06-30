@@ -1,7 +1,6 @@
 package com.georgesdoe.budgeteer.account.web;
 
 import com.georgesdoe.budgeteer.account.domain.AccountService;
-import com.georgesdoe.budgeteer.common.domain.ResourceNotFoundException;
 import com.georgesdoe.budgeteer.common.web.SimpleMessageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -43,8 +42,7 @@ public class AccountController {
     @ApiResponse(responseCode = "422", description = "Validation failed", content = @Content)
     @PutMapping("/accounts/{id}")
     public AccountResponseDto update(@PathVariable Long id,
-                                     @Valid @RequestBody AccountRequestDto request)
-            throws ResourceNotFoundException {
+                                     @Valid @RequestBody AccountRequestDto request) {
         return mapper.toResponse(accounts.updateAccount(id, mapper.toDomain(request)));
     }
 
@@ -52,7 +50,7 @@ public class AccountController {
     @ApiResponse(responseCode = "200", description = "Account deleted")
     @ApiResponse(responseCode = "404", description = "Account not found", content = @Content)
     @DeleteMapping("/accounts/{id}")
-    public SimpleMessageResponse delete(@PathVariable Long id) throws ResourceNotFoundException {
+    public SimpleMessageResponse delete(@PathVariable Long id) {
         accounts.deleteAccount(id);
         return new SimpleMessageResponse("Account deleted");
     }

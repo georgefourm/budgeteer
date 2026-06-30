@@ -19,7 +19,7 @@ import java.util.Map;
 @ControllerAdvice
 public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
-    protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleResourceNotFound(ResourceNotFoundException ex, WebRequest request) {
         var body = new SimpleMessageResponse(ex.getMessage());
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }

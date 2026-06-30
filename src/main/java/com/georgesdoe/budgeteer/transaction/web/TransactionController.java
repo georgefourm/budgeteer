@@ -1,6 +1,5 @@
 package com.georgesdoe.budgeteer.transaction.web;
 
-import com.georgesdoe.budgeteer.common.domain.ResourceNotFoundException;
 import com.georgesdoe.budgeteer.common.web.SimpleMessageResponse;
 import com.georgesdoe.budgeteer.transaction.domain.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,8 +40,7 @@ public class TransactionController {
     @ApiResponse(responseCode = "404", description = "Referenced account or category not found", content = @Content)
     @ApiResponse(responseCode = "422", description = "Validation failed", content = @Content)
     @PostMapping("/transactions")
-    public TransactionResponseDto create(@Valid @RequestBody TransactionRequestDto request)
-            throws ResourceNotFoundException {
+    public TransactionResponseDto create(@Valid @RequestBody TransactionRequestDto request) {
         return mapper.toResponse(transactions.createTransaction(mapper.toDomain(request)));
     }
 
@@ -51,8 +49,7 @@ public class TransactionController {
     @ApiResponse(responseCode = "404", description = "A referenced account or category was not found", content = @Content)
     @ApiResponse(responseCode = "422", description = "Validation failed", content = @Content)
     @PostMapping("/transactions/bulk")
-    public SimpleMessageResponse createBulk(@Valid @RequestBody List<TransactionRequestDto> request)
-            throws ResourceNotFoundException {
+    public SimpleMessageResponse createBulk(@Valid @RequestBody List<TransactionRequestDto> request) {
         transactions.createTransactions(request.stream().map(mapper::toDomain).toList());
         return new SimpleMessageResponse("Transactions saved");
     }
@@ -62,8 +59,7 @@ public class TransactionController {
     @ApiResponse(responseCode = "404", description = "Transaction, account or category not found", content = @Content)
     @ApiResponse(responseCode = "422", description = "Validation failed", content = @Content)
     @PutMapping("/transactions/{id}")
-    public TransactionResponseDto update(@PathVariable Long id, @Valid @RequestBody TransactionRequestDto request)
-            throws ResourceNotFoundException {
+    public TransactionResponseDto update(@PathVariable Long id, @Valid @RequestBody TransactionRequestDto request) {
         return mapper.toResponse(transactions.updateTransaction(id, mapper.toDomain(request)));
     }
 
@@ -71,7 +67,7 @@ public class TransactionController {
     @ApiResponse(responseCode = "200", description = "Transaction deleted")
     @ApiResponse(responseCode = "404", description = "Transaction not found", content = @Content)
     @DeleteMapping("/transactions/{id}")
-    public SimpleMessageResponse delete(@PathVariable Long id) throws ResourceNotFoundException {
+    public SimpleMessageResponse delete(@PathVariable Long id) {
         transactions.deleteTransaction(id);
         return new SimpleMessageResponse("Transaction deleted");
     }

@@ -1,12 +1,12 @@
 package com.georgesdoe.budgeteer.category.repository;
 
+import com.georgesdoe.budgeteer.common.repository.BaseRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface CategoryRepository extends CrudRepository<CategoryEntity, Long> {
+public interface CategoryRepository extends BaseRepository<CategoryEntity, Long> {
 
     Optional<CategoryEntity> findFirstByNameIgnoreCase(String name);
 

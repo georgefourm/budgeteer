@@ -47,14 +47,14 @@ public class TransactionService {
         return transactions.findAll(sorted).map(mapper::toDomain);
     }
 
-    public Transaction createTransaction(Transaction transaction) throws ResourceNotFoundException {
+    public Transaction createTransaction(Transaction transaction) {
         validateReferences(transaction);
         var entity = mapper.toEntity(transaction);
         transactions.save(entity);
         return mapper.toDomain(entity);
     }
 
-    public void createTransactions(List<Transaction> request) throws ResourceNotFoundException {
+    public void createTransactions(List<Transaction> request) {
         var batch = new LinkedList<TransactionEntity>();
         for (Transaction transaction : request) {
             validateReferences(transaction);
@@ -63,10 +63,8 @@ public class TransactionService {
         transactions.saveAll(batch);
     }
 
-    public Transaction updateTransaction(Long transactionId, Transaction changes)
-            throws ResourceNotFoundException {
-        var entity = transactions.findById(transactionId)
-                .orElseThrow(() -> new ResourceNotFoundException(Transaction.class));
+    public Transaction updateTransaction(Long transactionId, Transaction changes) {
+        var entity = transactions.findByIdOrThrow(transactionId);
         validateReferences(changes);
         entity.setAmount(changes.getAmount());
         entity.setDescription(changes.getDescription());
@@ -90,13 +88,12 @@ public class TransactionService {
         return transactions.assignCategoryByDescriptionMatch(categoryId, regex);
     }
 
-    public void deleteTransaction(Long transactionId) throws ResourceNotFoundException {
-        var entity = transactions.findById(transactionId)
-                .orElseThrow(() -> new ResourceNotFoundException(Transaction.class));
+    public void deleteTransaction(Long transactionId) {
+        var entity = transactions.findByIdOrThrow(transactionId);
         transactions.delete(entity);
     }
 
-    protected void validateReferences(Transaction transaction) throws ResourceNotFoundException {
+    protected void validateReferences(Transaction transaction) {
         if (!accounts.existsById(transaction.getAccountId())) {
             throw new ResourceNotFoundException(Account.class);
         }

@@ -2,7 +2,6 @@ package com.georgesdoe.budgeteer.account.domain;
 
 import com.georgesdoe.budgeteer.account.repository.AccountEntityMapper;
 import com.georgesdoe.budgeteer.account.repository.AccountRepository;
-import com.georgesdoe.budgeteer.common.domain.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,17 +29,15 @@ public class AccountService {
         return mapper.toDomain(entity);
     }
 
-    public Account updateAccount(Long id, Account changes) throws ResourceNotFoundException {
-        var entity = accounts.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(Account.class));
+    public Account updateAccount(Long id, Account changes) {
+        var entity = accounts.findByIdOrThrow(id);
         entity.setName(changes.getName());
         accounts.save(entity);
         return mapper.toDomain(entity);
     }
 
-    public void deleteAccount(Long id) throws ResourceNotFoundException {
-        var entity = accounts.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(Account.class));
+    public void deleteAccount(Long id) {
+        var entity = accounts.findByIdOrThrow(id);
         accounts.delete(entity);
     }
 }

@@ -1,6 +1,6 @@
 package com.georgesdoe.budgeteer.common.domain;
 
-public class ResourceNotFoundException extends Exception {
+public class ResourceNotFoundException extends RuntimeException {
 
     Class<?> resourceClass;
 
@@ -10,6 +10,10 @@ public class ResourceNotFoundException extends Exception {
 
     @Override
     public String getMessage() {
-        return resourceClass.getSimpleName() + " not found.";
+        var name = resourceClass.getSimpleName();
+        if (name.endsWith("Entity")) {
+            name = name.substring(0, name.length() - "Entity".length());
+        }
+        return name + " not found.";
     }
 }

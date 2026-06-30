@@ -1,9 +1,7 @@
 package com.georgesdoe.budgeteer.rules.domain;
 
-import com.georgesdoe.budgeteer.category.domain.Category;
 import com.georgesdoe.budgeteer.category.repository.CategoryEntity;
 import com.georgesdoe.budgeteer.category.repository.CategoryRepository;
-import com.georgesdoe.budgeteer.common.domain.ResourceNotFoundException;
 import com.georgesdoe.budgeteer.rules.repository.CategoryRuleEntity;
 import com.georgesdoe.budgeteer.rules.repository.CategoryRuleEntityMapper;
 import com.georgesdoe.budgeteer.rules.repository.CategoryRuleRepository;
@@ -39,16 +37,15 @@ public class CategoryRuleService {
         return result;
     }
 
-    public CategoryRule createRule(CategoryRule rule) throws ResourceNotFoundException {
+    public CategoryRule createRule(CategoryRule rule) {
         var entity = mapper.toEntity(rule);
         entity.setCategory(resolveCategory(rule));
         rules.save(entity);
         return mapper.toDomain(entity);
     }
 
-    public CategoryRule updateRule(Long id, CategoryRule changes) throws ResourceNotFoundException {
-        var entity = rules.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(CategoryRule.class));
+    public CategoryRule updateRule(Long id, CategoryRule changes) {
+        var entity = rules.findByIdOrThrow(id);
         entity.setRuleRegex(changes.getRuleRegex());
         entity.setImportance(changes.getImportance());
         entity.setCategory(resolveCategory(changes));
@@ -56,9 +53,8 @@ public class CategoryRuleService {
         return mapper.toDomain(entity);
     }
 
-    public void deleteRule(Long id) throws ResourceNotFoundException {
-        var entity = rules.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(CategoryRule.class));
+    public void deleteRule(Long id) {
+        var entity = rules.findByIdOrThrow(id);
         rules.delete(entity);
     }
 
@@ -67,9 +63,8 @@ public class CategoryRuleService {
      * assigning the rule's category in a single database update. Returns the number of
      * transactions updated.
      */
-    public int applyRule(Long id) throws ResourceNotFoundException {
-        var entity = rules.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(CategoryRule.class));
+    public int applyRule(Long id) {
+        var entity = rules.findByIdOrThrow(id);
         return transactions.assignCategoryByDescription(categoryIdOf(entity), entity.getRuleRegex());
     }
 
@@ -77,11 +72,10 @@ public class CategoryRuleService {
         return entity.getCategory() == null ? null : entity.getCategory().getId();
     }
 
-    private CategoryEntity resolveCategory(CategoryRule rule) throws ResourceNotFoundException {
+    private CategoryEntity resolveCategory(CategoryRule rule) {
         if (rule.getCategory() == null || rule.getCategory().getId() == null) {
             return null;
         }
-        return categories.findById(rule.getCategory().getId())
-                .orElseThrow(() -> new ResourceNotFoundException(Category.class));
+        return categories.findByIdOrThrow(rule.getCategory().getId());
     }
 }

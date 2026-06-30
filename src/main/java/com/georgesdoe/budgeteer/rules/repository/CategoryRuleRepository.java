@@ -1,7 +1,7 @@
 package com.georgesdoe.budgeteer.rules.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import com.georgesdoe.budgeteer.common.repository.BaseRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface CategoryRuleRepository extends CrudRepository<CategoryRuleEntity, Long>, PagingAndSortingRepository<CategoryRuleEntity, Long> {
+public interface CategoryRuleRepository extends BaseRepository<CategoryRuleEntity, Long>, PagingAndSortingRepository<CategoryRuleEntity, Long> {
 }

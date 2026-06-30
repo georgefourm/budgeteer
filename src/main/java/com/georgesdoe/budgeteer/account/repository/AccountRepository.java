@@ -1,6 +1,6 @@
 package com.georgesdoe.budgeteer.account.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import com.georgesdoe.budgeteer.common.repository.BaseRepository;
 
-public interface AccountRepository extends CrudRepository<AccountEntity, Long> {
+public interface AccountRepository extends BaseRepository<AccountEntity, Long> {
 }

@@ -1,6 +1,5 @@
 package com.georgesdoe.budgeteer.rules.web;
 
-import com.georgesdoe.budgeteer.common.domain.ResourceNotFoundException;
 import com.georgesdoe.budgeteer.common.web.SimpleMessageResponse;
 import com.georgesdoe.budgeteer.rules.domain.CategoryRuleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,8 +31,7 @@ public class CategoryRuleController {
     @ApiResponse(responseCode = "200", description = "Category rule created")
     @ApiResponse(responseCode = "404", description = "Referenced category not found", content = @Content)
     @PostMapping("/rules")
-    public CategoryRuleResponseDto create(@RequestBody CategoryRuleRequestDto request)
-            throws ResourceNotFoundException {
+    public CategoryRuleResponseDto create(@RequestBody CategoryRuleRequestDto request) {
         return mapper.toResponse(rules.createRule(mapper.toDomain(request)));
     }
 
@@ -42,8 +40,7 @@ public class CategoryRuleController {
     @ApiResponse(responseCode = "404", description = "Category rule or referenced category not found", content = @Content)
     @PutMapping("/rules/{id}")
     public CategoryRuleResponseDto update(@PathVariable Long id,
-                                          @RequestBody CategoryRuleRequestDto request)
-            throws ResourceNotFoundException {
+                                          @RequestBody CategoryRuleRequestDto request) {
         return mapper.toResponse(rules.updateRule(id, mapper.toDomain(request)));
     }
 
@@ -51,7 +48,7 @@ public class CategoryRuleController {
     @ApiResponse(responseCode = "200", description = "Category rule deleted")
     @ApiResponse(responseCode = "404", description = "Category rule not found", content = @Content)
     @DeleteMapping("/rules/{id}")
-    public SimpleMessageResponse delete(@PathVariable Long id) throws ResourceNotFoundException {
+    public SimpleMessageResponse delete(@PathVariable Long id) {
         rules.deleteRule(id);
         return new SimpleMessageResponse("Category rule deleted");
     }
@@ -61,7 +58,7 @@ public class CategoryRuleController {
     @ApiResponse(responseCode = "200", description = "Rule applied")
     @ApiResponse(responseCode = "404", description = "Category rule not found", content = @Content)
     @PostMapping("/rules/{id}/apply")
-    public ApplyRuleResponseDto apply(@PathVariable Long id) throws ResourceNotFoundException {
+    public ApplyRuleResponseDto apply(@PathVariable Long id) {
         return new ApplyRuleResponseDto(rules.applyRule(id));
     }
 }
